@@ -61,3 +61,6 @@ def get_witness(problem, solution, printall):
         print("maximum_value= " + str(maximum_value))
         print("witness= " + str(witness))
     return witness
+
+
+get_witness([4, 11, 8, 1], [1, -1, 1, -1], True)
