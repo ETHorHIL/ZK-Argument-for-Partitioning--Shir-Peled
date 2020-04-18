@@ -35,7 +35,7 @@
 import random
 
 
-def get_witness(problem, solution, printall):
+def get_witness(problem, solution):
     """
     Given an instance of the problem via a list of numbers and a solution which
     is a list of -1 and 1, we say a solution satisfies the problem if the dot
@@ -53,13 +53,12 @@ def get_witness(problem, solution, printall):
         maximum_value = max(maximum_value, problem_i)
     random_r = random.randint(0, maximum_value)
     witness = [x + random_r for x in witness]
-    if printall is True:
-        print("problem= " + str(problem))
-        print("solution= " + str(solution))
-        print("coinflip= " + str(coinflip))
-        print("random_r= " + str(random_r))
-        print("maximum_value= " + str(maximum_value))
-        print("witness= " + str(witness))
+    print("problem= " + str(problem))
+    print("solution= " + str(solution))
+    print("coinflip= " + str(coinflip))
+    print("random_r= " + str(random_r))
+    print("maximum_value= " + str(maximum_value))
+    print("witness= " + str(witness))
     return witness
 
 
