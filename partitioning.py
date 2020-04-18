@@ -53,13 +53,9 @@ def get_witness(problem, solution):
         maximum_value = max(maximum_value, problem_i)
     random_r = random.randint(0, maximum_value)
     witness = [x + random_r for x in witness]
-    print("problem= " + str(problem))
-    print("solution= " + str(solution))
-    print("coinflip= " + str(coinflip))
-    print("random_r= " + str(random_r))
-    print("maximum_value= " + str(maximum_value))
-    print("witness= " + str(witness))
     return witness
 
 
+"""
 get_witness([4, 11, 8, 1], [1, -1, 1, -1], True)
+"""
