@@ -44,19 +44,15 @@ class MerkleTree:
         # print("ceil: " + str(ceil(log2(len(self.data)))))
         # print("2**x: " + str(int(2**(ceil(log2(len(self.data)))))))
         self.data.extend([0] * (data_length_next_power_2 - len(data)))
-        print("data: " + str(self.data))
         # Intertwine with randomness to obtain ZK
         # randint between 1 and 2^32
         rand_list = [random.randint(0, 1 << 32) for x in self.data]
-        print(rand_list)
         self.data = [x for tup in zip(self.data, rand_list) for x in tup]
-        print(self.data)
         # Create bottom level of the tree (i.e. leaves)
         self.tree = ["" for x in self.data] + \
             [hash_string(str(x)) for x in self.data]
         for i in range(len(self.data)-1, 0, -1):
             self.tree[i] = hash_string(self.tree[2*i]+self.tree[2*i+1])
-        print("tree: " + str(self.tree))
 
     def get_root(self):
         return self.tree[1]
@@ -68,34 +64,34 @@ class MerkleTree:
         id = id + len(self.data)
         while id > 1:
             # add the sibling one to the right
-            print("id and treeitem: " + str(id) + " " + str(self.tree[id ^ 1]))
-            auth_path += self.tree[id ^ 1]
+            auth_path += [self.tree[id ^ 1]]
             # go one layer up, round down
             id = id // 2
         return value, auth_path
 
-    def verify_zk_merkle_path(root, data_size, value_id, value, path):
-        # hashvalue of data in leafe you want to verify
-        cur = hash_string(str(value))
-        # assign id of value_id + length of data
-        tree_node_id = (value_id * 2 + int(2**ceil(log2(data_size * 2))))
-        print("tree_node_id" + tree_node_id)
-        for sibling in path:
-            assert tree_node_id > 1
-            print("sibling" + sibling)
-            if tree_node_id % 2 == 0:
-                cur = hash_string(cur + sibling)
-            else:
-                cur = hash_string(sibling + cur)
-            print("cur" + cur)
-            tree_node_id = tree_node_id // 2
-        assert tree_node_id == 1
-        return root == cur
 
+def verify_zk_merkle_path(root, data_size, value_id, value, path):
+    # hashvalue of data in leafe you want to verify
+    cur = hash_string(str(value))
+    # assign id of value_id + length of data
+    tree_node_id = value_id * 2 + int(2**ceil(log2(data_size * 2)))
+    for sibling in path:
+        # print("tree_node_id: " + str(tree_node_id))
+        assert tree_node_id > 1
+        # print("sibling: " + sibling)
+        if tree_node_id % 2 == 0:
+            cur = hash_string(cur + sibling)
+        else:
+            cur = hash_string(sibling + cur)
+        # print("cur: " + cur)
+        tree_node_id = tree_node_id // 2
+    assert tree_node_id == 1
+    return root == cur
 
-tree = MerkleTree([1, 2, 3])
 
 """
+tree = MerkleTree([1, 2, 3])
+
 value_path = str(tree.get_val_and_path(2))
 
 print(tree.get_root())
