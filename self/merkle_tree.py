@@ -43,36 +43,77 @@ class merkle_tree(object):
         return sibling
 
     def find_sibling_of_parent_id(self, id):
-        print("id before sibling:" + str(id))
+        # print("id before sibling:" + str(id))
         sibling = self.find_sibling_id(id)
-        print("sibling: " + str(sibling))
+        # print("sibling: " + str(sibling))
         parent = int(max(id, sibling)/2) + len(self.data) * 2
-        print("parent: " + str(parent))
+        # print("parent: " + str(parent))
         sibling_of_parent = self.find_sibling_id(parent)
-        print("sibling_of_parent: " + str(sibling_of_parent))
+        # print("sibling_of_parent: " + str(sibling_of_parent))
         return sibling_of_parent
     # def give_value_n_path(self, id):
 
     def give_value_n_path(self, id):
         value = self.data[id]
         path = []
-        path += [self.tree[self.find_sibling_id(id * 2)]]
-        # for i in range(0, int(log2(len(self.data))-1)):
         id = id * 2
-        while id < len(self.data) * 4 - 5:
-            print("id: " + str(id))
+        path += [self.tree[self.find_sibling_id(id)]]
+        while id < len(self.data) * 4 - 4:
+            # print("id: " + str(id))
             sibling_of_parent = self.find_sibling_of_parent_id(id)
-            print("sibling_of_parent " + str(sibling_of_parent))
+            # print("sibling_of_parent " + str(sibling_of_parent))
             path += [self.tree[sibling_of_parent]]
             id = sibling_of_parent
-            print("id: " + str(id) + " < " + " data * 4 - 4: " +
-                  str(len(self.data) * 4 - 4))
+            # print("id: " + str(id) + " < " + " data * 4 - 4: " +
+            #   	str(len(self.data) * 4 - 4))
         path += [self.give_root()]
         return value, path
 
+    def parent_hash(self, id, value, sibling):
+        parent_value = []
+        if int(id) % 2 == 0:
+            parent_value = hash_string(str(value) + str(sibling))
+            # print("iamtherigt: " + str(id % 2 == 0))
+        else:
+            # print("iamin: " + str(id % 2 == 0))
+            parent_value = hash_string(str(sibling) + str(value))
+        """
+        print("id. " + str(id) + "mod2: " + str(id % 2))
+        print("value:" + str(value))
+        print("sibling:" + str(sibling))
+        print("even: " + str([hash_string(str(value) + str(sibling))]))
+        print("uneven: " + str(hash_string(str(sibling) + str(value))))
+        print("took: " + parent_value)
+        """
+        return parent_value
 
-tree = merkle_tree([1, 2, 3])
+    def verify_proof(self, root, id, value, path, data_size):
+        id = id * 2
+        value = value
+        sibling = path[0]
+        # print("verify proof0: id, value, sibling: " + str(id) + ", " + str(value) + ", " + str(sibling))
+        value = self.parent_hash(id, value, sibling)
+        # print("parent_hash: " + str(value))
+        for i in range(1, len(path) - 1):
+            sibling = path[i]
+            id = int(max(id, self.find_sibling_id(id))/2) + data_size * 2
+            # print("verify proof0: id, value, sibling: " + str(id) + ", " + str(value) + ", " + str(sibling))
+            value = self.parent_hash(id, value, sibling)
+            # print("parent_hash: " + str(value))
+        return value == root
+
+"""
+treesize = 2
+tree = merkle_tree([1, 2])
 # print(tree.find_sibling_id(9))
-valuenpath = tree.give_value_n_path(3)
-print(valuenpath)
-print(len(valuenpath[1]))
+
+for i in range(0, treesize):
+    id = i
+    value = tree.give_value_n_path(id)[0]
+    path = tree.give_value_n_path(id)[1]
+    root = tree.give_root()
+    data_size = len(tree.data)
+    # print("id, value, root" + str(id) + ", " + str(value) + ", " + str(root))
+    print(i)
+    print(str(tree.verify_proof(root, id, value, path, data_size)))
+"""
