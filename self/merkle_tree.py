@@ -81,4 +81,4 @@ def test():
         print(str(tree.verify_proof(root, id, value, path, data_size)))
 
 
-test()
+# test()
