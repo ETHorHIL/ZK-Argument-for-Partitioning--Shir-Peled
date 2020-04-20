@@ -1,8 +1,10 @@
 import getandcheckproof
 
+
 def test(q):
     problem = [1, 2, 3, 6, 6, 6, 12]
-    assignment = [1, 1, 1, -1, -1, -1, 1]
+    assignment = [0, 0, 0, 0, 0, 0, 0]
+    # assignment = [1, 1, 1, -1, -1, -1, 1]
     proof = getandcheckproof.get_proof(problem, assignment, q)
     print("proof: " + str(proof))
     return getandcheckproof.verify_proof(problem, proof)
