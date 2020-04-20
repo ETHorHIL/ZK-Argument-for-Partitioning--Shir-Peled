@@ -102,9 +102,9 @@ class merkle_tree(object):
             # print("parent_hash: " + str(value))
         return value == root
 
-"""
-treesize = 2
-tree = merkle_tree([1, 2])
+
+treesize = 4
+tree = merkle_tree([1, 2, 3, 4])
 # print(tree.find_sibling_id(9))
 
 for i in range(0, treesize):
@@ -116,4 +116,3 @@ for i in range(0, treesize):
     # print("id, value, root" + str(id) + ", " + str(value) + ", " + str(root))
     print(i)
     print(str(tree.verify_proof(root, id, value, path, data_size)))
-"""
