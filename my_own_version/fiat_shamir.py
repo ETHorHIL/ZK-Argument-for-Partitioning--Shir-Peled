@@ -1,7 +1,7 @@
 import merkle_tree
 import create_witness
 import random
-
+import math
 
 class prover(object):
     def __init__(self, problem, solution):
@@ -18,6 +18,17 @@ class prover(object):
         else:
             return self.tree.give_value_n_path(query), \
                    self.tree.give_value_n_path(query + 1)
+
+    def fiat_shamir_proof(self, num_queries, p_problem, solution, seed):
+        answer = []
+        for i in range(0, num_queries):
+           P = prover(p_problem, solution)
+           root = P.give_root()
+           query = V.give_query(root, seed)
+           proof = P.answer_query(query)
+           answer += [query, root, proof]
+           seed = str(answer[3 * i]) + str(answer[3 * i + 1]) + str(answer[3 * i + 2])
+        return answer
 
 
 class verifier(object):
@@ -50,59 +61,38 @@ class verifier(object):
             verify_3 = abs(p_problem[query]) == abs(answer[1][0] - answer[0][0])
         return verify_1 & verify_2 & verify_3
 
+    def fiat_shamir_verification(self, answer, problem, num_queries):
+        passed = True
+        passed &= answer[0] == V.give_query(answer[1], str(p_problem))
+        passed &= V.verify(answer[2], answer[0], answer[1])
+        for i in range(0, num_queries - 1):
+            passed &= answer[3 * i + 3] \
+                                 == V.give_query(answer[1 + 3 * i],
+                                                 str(answer[3 * i]) +
+                                                 str(answer[1 + 3 * i]) +
+                                                 str(answer[2 + 3 * i]))
+            passed &= V.verify(answer[2 + 3 * i], answer[3 * i],
+                               answer[1 + 3 * i])
+        return passed
+
 
 # public values
-prob = [1, 1, 2, 4]
-p_problem = prob  # [1, 2, 3, 4, 1, 1]
+p_problem = [1, 1, 2, 4]
 problem_lenght = len(p_problem)
-num_queries = 10
-
+num_queries = int(math.log(0.0000001, 1/problem_lenght))
 # private values
 solution = [-1, -1, -1, 1]
 
-
-answer = []
 P = prover(p_problem, solution)
 V = verifier([[0] for x in p_problem])
-root = P.give_root()
-query = V.give_query(root, str(p_problem))
-proof = P.answer_query(query)
-print(answer)
-answer += [query, root, proof]
-print(answer)
-
-for i in range(0, num_queries):
-    P = prover(p_problem, solution)
-    root = P.give_root()
-    query = V.give_query(root, str(answer[3 * i]) + str(answer[3 * i + 1]) + str(answer[3 * i + 2]))
-    proof = P.answer_query(query)
-    answer += [query, root, proof]
-# [query, root, proof, query root, proof]
-for i in range(0, len(answer)):
-    print("round: " + str(i))
-    print("answer[" + str(i) + "]: " + str(answer[i]))
-
-passed = True
-passed &= answer[0] == V.give_query(answer[1], str(p_problem))
-passed &= V.verify(answer[2], answer[0], answer[1])
 
 
-for i in range(0, num_queries - 1):
-    querycheck = answer[3 * i + 3] == V.give_query(answer[1 + 3 * i], str(answer[3 * i]) + str(answer[1 + 3 * i]) + str(answer[2 + 3 * i]))
-    passed &= querycheck
-    verify = V.verify(answer[2 + 3 * i], answer[3 * i], answer[1 + 3 * i])
-    passed &= verify
+def test():
+    root = ""
+    seed = V.give_query(root, str(p_problem))
+    answer = P.fiat_shamir_proof(num_queries, p_problem, solution, seed)
+    verification = V.fiat_shamir_verification(answer, p_problem, num_queries)
+    print(verification)
 
-print(passed)
 
-
-"""
-querycheck2 = answer[0 + 3] == V.give_query(answer[0 + 4], str(answer[0]) + str(answer[1]) + str(answer[2]))
-print(querycheck2)
-verify2 = V.verify(answer[2 + 3], answer[0 + 3], answer[1 + 3])
-print(verify2)
-"""
-
-# ok check that first query (answer[0]) = givequery(answer[1], problem)
-# ok verify(answer3, query, root) add query and root
-# ok check that next query (answer 3,7) = giverquery(answer[1+4], )
+test()
