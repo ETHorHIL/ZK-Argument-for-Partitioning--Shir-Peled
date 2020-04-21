@@ -59,9 +59,9 @@ num_queries = 10
 
 # private values
 solution = [-1, -1, -1, 1]
-answer = []
 
-# for i in range(0, num_queries - 1):
+
+answer = []
 P = prover(p_problem, solution)
 V = verifier([[0] for x in p_problem])
 root = P.give_root()
