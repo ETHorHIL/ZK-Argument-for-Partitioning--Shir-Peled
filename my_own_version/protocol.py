@@ -56,7 +56,7 @@ problem_lenght = len(p_problem)
 solution = [-1, 1]
 
 P = prover(p_problem, solution)
-V = verifier(p_problem)
+V = verifier([[0] for i in p_problem])
 root = P.give_root()
 query = V.give_query(root)
 answer = P.answer_query(query)
