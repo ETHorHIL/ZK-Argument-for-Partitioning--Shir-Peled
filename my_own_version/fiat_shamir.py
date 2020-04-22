@@ -22,12 +22,12 @@ class prover(object):
     def fiat_shamir_proof(self, num_queries, p_problem, solution, seed):
         answer = []
         for i in range(0, num_queries):
-           P = prover(p_problem, solution)
-           root = P.give_root()
-           query = V.give_query(root, seed)
-           proof = P.answer_query(query)
-           answer += [query, root, proof]
-           seed = str(answer[3 * i]) + str(answer[3 * i + 1]) + str(answer[3 * i + 2])
+            P = prover(p_problem, solution)
+            root = P.give_root()
+            query = V.give_query(root, seed)
+            proof = P.answer_query(query)
+            answer += [query, root, proof]
+            seed = str(answer[3 * i]) + str(answer[3 * i + 1]) + str(answer[3 * i + 2])
         return answer
 
 
@@ -45,15 +45,15 @@ class verifier(object):
     def verify(self, answer, query, root):
         if query == problem_lenght:
             verify_1 = self.tree.verify_proof(root, 0, answer[0][0],
-                                          answer[0][1], len(self.tree.data))
+                                              answer[0][1], len(self.tree.data))
             verify_2 = self.tree.verify_proof(root, query, answer[1][0],
-                                          answer[1][1], len(self.tree.data))
+                                              answer[1][1], len(self.tree.data))
         else:
             verify_1 = self.tree.verify_proof(root, query, answer[0][0],
-                                      answer[0][1], len(self.tree.data))
+                                              answer[0][1], len(self.tree.data))
 
             verify_2 = self.tree.verify_proof(root, query + 1, answer[1][0],
-                                          answer[1][1], len(self.tree.data))
+                                              answer[1][1], len(self.tree.data))
         verify_3 = True
         if query == (int(problem_lenght)):
             verify_3 = answer[0][0] == answer[1][0]
