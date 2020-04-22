@@ -9,7 +9,6 @@ def test(q):
     print("proof: " + str(proof))
     return getandcheckproof.verify_proof(problem, proof)
 
-
 print("result: " + str(test(4)))
 # witness = partitioning.get_witness([4, 11, 8, 1], [1, -1, 1, -1])
 # tree = merkletree.MerkleTree(witness)

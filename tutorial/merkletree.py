@@ -38,19 +38,14 @@ class MerkleTree:
 
 
 def verify_zk_merkle_path(root, data_size, value_id, value, path):
-    # hashvalue of data in leafe you want to verify
     cur = hash_string(str(value))
-    # assign id of value_id + length of data
     tree_node_id = value_id * 2 + int(2**ceil(log2(data_size * 2)))
     for sibling in path:
-        # print("tree_node_id: " + str(tree_node_id))
         assert tree_node_id > 1
-        # print("sibling: " + sibling)
         if tree_node_id % 2 == 0:
             cur = hash_string(cur + sibling)
         else:
             cur = hash_string(sibling + cur)
-        # print("cur: " + cur)
         tree_node_id = tree_node_id // 2
     assert tree_node_id == 1
     return root == cur
